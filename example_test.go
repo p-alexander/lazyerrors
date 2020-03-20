@@ -18,21 +18,21 @@ func Example() {
 
 	// direct usage.
 	someFunc := func() (err error) {
-		// defer a Catch function at the beginning of the wrapping function.
+		// defer a catch function at the beginning of the wrapping function.
 		defer lazyerrors.Catch(&err)
 		// execute the function that panics.
 		lazyerrors.Try(functions[2]())
 
 		return
 	}
-	// wrapping function will return an error instead of panic as Catch suppresses it by default.
+	// wrapping function will return an error instead of panic as the catch function suppresses it by default.
 	fmt.Println(someFunc())
 
 	// anonymous function usage.
 	var err error
 
 	for _, f := range functions {
-		// define the anonymous function to defer Catch in the necessary block of code.
+		// define an anonymous function to defer the catch function in the necessary block of code.
 		func() {
 			defer lazyerrors.Catch(&err)
 			lazyerrors.Try(f())
