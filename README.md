@@ -32,10 +32,11 @@ someFunc := func() (err error) {
 // wrapping function will return an error instead of panic as Catch suppresses it by default.
 fmt.Println(someFunc())
 
-// anonymous usage.
+// anonymous function usage.
 var err error
-// to catch errors inline anonymous function can be used to defer the Catch function in the necessary block of code.
+
 for _, f := range functions {
+	// define the anonymous function to defer Catch in the necessary block of code.
 	func() {
 		defer lazyerrors.Catch(&err)
 		lazyerrors.Try(f())
