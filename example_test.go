@@ -9,6 +9,7 @@ import (
 
 // Example of error handling via Try and Catch.
 func Example() {
+	// functions with return types that can be caught.
 	functions := []func() error{
 		func() error { return nil },
 		func() error { return errors.New("some error") },
@@ -19,7 +20,7 @@ func Example() {
 	someFunc := func() (err error) {
 		// defer a Catch function at the beginning of the wrapping function.
 		defer lazyerrors.Catch(&err)
-		// execute function that panics.
+		// execute the function that panics.
 		lazyerrors.Try(functions[2]())
 
 		return
