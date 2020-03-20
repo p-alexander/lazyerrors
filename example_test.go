@@ -7,13 +7,14 @@ import (
 	"github.com/p-alexander/lazyerrors"
 )
 
-// Example - example of error handling via Try and Catch.
+// Example of error handling via Try and Catch.
 func Example() {
 	functions := []func() error{
 		func() error { return nil },
 		func() error { return errors.New("some error") },
 		func() error { panic("some panic") },
 	}
+
 	// direct usage.
 	someFunc := func() (err error) {
 		// defer a Catch function at the beginning of the wrapping function.
@@ -23,12 +24,14 @@ func Example() {
 
 		return
 	}
-	// upon executing wrapping function it will return an error instead of panic as Catch suppresses panic by default.
+	// wrapping function will return an error instead of panic as Catch suppresses it by default.
 	fmt.Println(someFunc())
-	// anonymous usage.
+
+	// anonymous function usage.
 	var err error
-	// to catch errors inline anonymous function can be used to defer the Catch function in the necessary block of code.
+
 	for _, f := range functions {
+		// define the anonymous function to defer Catch in the necessary block of code.
 		func() {
 			defer lazyerrors.Catch(&err)
 			lazyerrors.Try(f())

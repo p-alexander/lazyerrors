@@ -10,14 +10,14 @@ var (
 	Try = TryThrowFunc
 )
 
-// TryThrowFunc - throws an error if any.
+// TryThrowFunc - throws non-nil error err.
 func TryThrowFunc(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-// CatchErrorFunc - catches thrown errors.
+// CatchErrorFunc - catches thrown error.
 func CatchErrorFunc(ep *error) {
 	if ep == nil {
 		return
@@ -34,7 +34,7 @@ func CatchErrorFunc(ep *error) {
 	}
 }
 
-// CatchAllFunc - catches thrown errors as well as panics.
+// CatchAllFunc - catches thrown error or panic.
 func CatchAllFunc(ep *error) {
 	if ep == nil {
 		return
