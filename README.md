@@ -2,9 +2,21 @@
 
 Golang error handling via panic/recover approach.
 
-import "github.com/p-alexander/lazyerrors"
+## Summary
 
-Example:
+Purpose of this package is to show a somewhat dirty way to diminish endless chains of:
+
+```go
+if err != nil {
+	return err
+}
+```
+
+## Download&Install
+
+`go get github.com/p-alexander/lazyerrors`
+
+## Example:
 
 ```go
 import (
