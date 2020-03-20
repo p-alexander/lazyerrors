@@ -2,7 +2,7 @@
 
 Golang error handling via panic/recover approach.
 
-## Summary
+## Summary:
 
 Purpose of this package is to show a somewhat dirty way to diminish endless chains of:
 
@@ -12,7 +12,7 @@ if err != nil {
 }
 ```
 
-## Download&Install
+## Install:
 
 `go get github.com/p-alexander/lazyerrors`
 

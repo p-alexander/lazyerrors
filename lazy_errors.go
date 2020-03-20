@@ -2,9 +2,9 @@
 //
 // Purpose of this package is to show a somewhat dirty way to diminish endless chains of:
 //
-// if err != nil {
-//	 return err
-// }
+//     if err != nil {
+//             return err
+//     }
 package lazyerrors
 
 import "fmt"
