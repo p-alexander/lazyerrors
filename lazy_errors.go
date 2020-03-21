@@ -1,6 +1,6 @@
 // Package lazyerrors - contains simple error handling via panic/recover approach.
 //
-// Purpose of this package is to show a somewhat dirty way to diminish endless chains of:
+// Purpose of this package is to show a way to diminish endless chains of:
 //
 //     if err != nil {
 //             return err
