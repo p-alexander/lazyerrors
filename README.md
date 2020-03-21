@@ -28,8 +28,8 @@ import "github.com/p-alexander/lazyerrors"
 
 ```go
      func foo() (err error) {
-             defer Catch(&err)
-             Try(bar())
+             defer lazyerrors.Catch(&err)
+             lazyerrors.Try(bar())
 
              return
      }
@@ -41,8 +41,8 @@ import "github.com/p-alexander/lazyerrors"
      var err error
 
      func() {
-             defer Catch(&err)
-             Try(bar())
+             defer lazyerrors.Catch(&err)
+             lazyerrors.Try(bar())
      }()
 ```
 

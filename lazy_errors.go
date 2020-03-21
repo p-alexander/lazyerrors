@@ -9,8 +9,8 @@
 // Defer Catch at the beggining of your function and then check errors with Try.
 //
 //     func foo() (err error) {
-//             defer Catch(&err)
-//             Try(bar())
+//             defer lazyerrors.Catch(&err)
+//             lazyerrors.Try(bar())
 //
 //             return
 //     }
@@ -20,8 +20,8 @@
 //     var err error
 //
 //     func() {
-//             defer Catch(&err)
-//             Try(bar())
+//             defer lazyerrors.Catch(&err)
+//             lazyerrors.Try(bar())
 //     }()
 //
 // As a result, you'll have 'return on error' behaviour as if standard approach was used.
