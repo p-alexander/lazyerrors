@@ -10,25 +10,6 @@ func TestCatchAllFunc(t *testing.T) {
 	fmt.Println(testWrapper(CatchAllFunc, testFuncNoError))
 	fmt.Println(testWrapper(CatchAllFunc, testFuncError))
 	fmt.Println(testWrapper(CatchAllFunc, testFuncPanic))
-
-	functions := []func() error{
-		testFuncNoError,
-		testFuncError,
-		testFuncPanic,
-	}
-
-	var err error
-
-	for _, f := range functions {
-		func() {
-			defer Catch(&err)
-			Try(f())
-
-			return
-		}()
-
-		fmt.Println(err)
-	}
 }
 
 func TestCatchErrorFunc(t *testing.T) {
@@ -43,6 +24,20 @@ func TestCatchErrorFunc(t *testing.T) {
 	fmt.Println(testWrapper(CatchErrorFunc, testFuncNoError))
 	fmt.Println(testWrapper(CatchErrorFunc, testFuncError))
 	fmt.Println(testWrapper(CatchErrorFunc, testFuncPanic))
+}
+
+func TestCatchLazyErrorFunc(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			panic("this should panic")
+		} else {
+			fmt.Println("as expected:", r)
+		}
+	}()
+
+	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncNoError))
+	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncError))
+	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncPanic))
 }
 
 func BenchmarkCatchAllFunc(b *testing.B) {
@@ -61,6 +56,25 @@ func BenchmarkCatchAllFunc(b *testing.B) {
 				Try(f())
 			}()
 		}
+	}
+}
+
+func TestNestedError(t *testing.T) {
+	functions := []func() error{
+		testFuncNoError,
+		testFuncError,
+		testFuncPanic,
+	}
+
+	var err error
+
+	for _, f := range functions {
+		func() {
+			defer Catch(&err)
+			Try(testWrapper(Catch, f))
+		}()
+
+		fmt.Printf("wrapped:\n%v\noriginal:\n%v\n\n", err, errors.Unwrap(err))
 	}
 }
 

@@ -38,6 +38,6 @@ func Example() {
 			lazyerrors.Try(f())
 		}()
 		// print the contents.
-		fmt.Println(err)
+		fmt.Println(err, errors.Unwrap(err))
 	}
 }
