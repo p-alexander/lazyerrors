@@ -24,7 +24,7 @@ Import:
 import "github.com/p-alexander/lazyerrors"
 ```
 
- Defer Catch at the beggining of your function and then check the errors with Try.
+ Defer Catch at the beggining of your function and then check errors with Try.
 
 ```go
      func foo() (err error) {
@@ -35,7 +35,7 @@ import "github.com/p-alexander/lazyerrors"
      }
 ```
 
- Or put them inside of your code with an anonymous function.
+ Or put Try/Catch inside of your code with an anonymous function.
 
 ```go
      var err error
