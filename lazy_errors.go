@@ -6,7 +6,7 @@
 //             return err
 //     }
 //
-// Defer Catch at the beggining of your function and then check errors with Try.
+// Defer Catch at the beggining of your function and then check for errors with Try.
 //
 //     func foo() (err error) {
 //             defer lazyerrors.Catch(&err)
@@ -29,13 +29,13 @@
 // What happens inside of Try:
 //
 //     - On nil error execution will procede normally.
-//     - On non-nil error it will be wrapped to show the caller, then it will start to panic until Catch.
+//     - On non-nil error it will be wrapped to show the caller and risen as panic until Catch.
 //     - If an error was already wrapped, it won't be wrapped again to preserve the caller.
 //
 // Now about Catch:
 //
 //     - By default Catch can recover from any error or panic.
-//     - Default behaviour can be changed through assigning Catch with another handler from a given set.
+//     - Default behaviour can be changed by assigning Catch with other handler from a given set.
 //     - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
 //
 package lazyerrors
