@@ -31,11 +31,12 @@
 //     - On nil error execution will procede normally.
 //     - On non-nil error it will be wrapped to show the caller and risen as panic until Catch.
 //     - If an error was already wrapped, it won't be wrapped again to preserve the caller.
+//     - Wrapping can be disabled by assigning Try with another handler from a given set.
 //
 // Now about Catch:
 //
 //     - By default Catch can recover from any error or panic.
-//     - Default behaviour can be changed by assigning Catch with other handler from a given set.
+//     - Default behaviour can be changed by assigning Catch with another handler from a given set.
 //     - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
 //
 package lazyerrors
@@ -50,8 +51,8 @@ import (
 var (
 	// Catch - common catch handler, defaults to CatchAllFunc.
 	Catch = CatchAllFunc
-	// Try - common try handler, defaults to TryThrowFunc.
-	Try = TryThrowFunc
+	// Try - common try handler, defaults to TryWrappedErrorFunc.
+	Try = TryWrappedErrorFunc
 	// ErrPanic - default error wrapped inside of LazyErrorFromPanic for Uwrap consistency.
 	ErrPanic = errors.New("panic")
 )
@@ -114,8 +115,8 @@ func caller() string {
 	return ""
 }
 
-// TryThrowFunc - throws non-nil error err.
-func TryThrowFunc(err error) {
+// TryWrappedErrorFunc - wraps non-nil error err into LazyErrorWithCaller and throws it as panic.
+func TryWrappedErrorFunc(err error) {
 	if err != nil {
 		switch err.(type) {
 		// if an error is already wrapped, then return it as is.
@@ -125,6 +126,13 @@ func TryThrowFunc(err error) {
 		default:
 			panic(NewErrorWithCaller(err))
 		}
+	}
+}
+
+// TryErrorFunc - throws non-nil error err as panic.
+func TryErrorFunc(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 

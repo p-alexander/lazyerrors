@@ -7,9 +7,23 @@ import (
 )
 
 func TestCatchAllFunc(t *testing.T) {
-	fmt.Println(testWrapper(CatchAllFunc, testFuncNoError))
-	fmt.Println(testWrapper(CatchAllFunc, testFuncError))
-	fmt.Println(testWrapper(CatchAllFunc, testFuncPanic))
+	if err := testWrapper(TryWrappedErrorFunc, CatchAllFunc, testFuncNoError); err != nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryWrappedErrorFunc, CatchAllFunc, testFuncError); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryWrappedErrorFunc, CatchAllFunc, testFuncPanic); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
 }
 
 func TestCatchErrorFunc(t *testing.T) {
@@ -21,9 +35,21 @@ func TestCatchErrorFunc(t *testing.T) {
 		}
 	}()
 
-	fmt.Println(testWrapper(CatchErrorFunc, testFuncNoError))
-	fmt.Println(testWrapper(CatchErrorFunc, testFuncError))
-	fmt.Println(testWrapper(CatchErrorFunc, testFuncPanic))
+	if err := testWrapper(TryWrappedErrorFunc, CatchErrorFunc, testFuncNoError); err != nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryWrappedErrorFunc, CatchErrorFunc, testFuncError); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+	// this should panic.
+	if err := testWrapper(TryWrappedErrorFunc, CatchErrorFunc, testFuncPanic); err != nil {
+		t.Fatal("unexpected:", err)
+	}
 }
 
 func TestCatchLazyErrorFunc(t *testing.T) {
@@ -35,9 +61,21 @@ func TestCatchLazyErrorFunc(t *testing.T) {
 		}
 	}()
 
-	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncNoError))
-	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncError))
-	fmt.Println(testWrapper(CatchLazyErrorFunc, testFuncPanic))
+	if err := testWrapper(TryWrappedErrorFunc, CatchLazyErrorFunc, testFuncNoError); err != nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryWrappedErrorFunc, CatchLazyErrorFunc, testFuncError); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+	// this should panic.
+	if err := testWrapper(TryWrappedErrorFunc, CatchLazyErrorFunc, testFuncPanic); err != nil {
+		t.Fatal("unexpected:", err)
+	}
 }
 
 func BenchmarkCatchAllFunc(b *testing.B) {
@@ -71,16 +109,36 @@ func TestNestedError(t *testing.T) {
 	for _, f := range functions {
 		func() {
 			defer Catch(&err)
-			Try(testWrapper(Catch, f))
+			Try(testWrapper(TryWrappedErrorFunc, Catch, f))
 		}()
 
 		fmt.Printf("wrapped:\n%v\noriginal:\n%v\n\n", err, errors.Unwrap(err))
 	}
 }
 
-func testWrapper(catcher func(*error), f func() error) (err error) {
-	defer catcher(&err)
-	Try(f())
+func TestTryError(t *testing.T) {
+	if err := testWrapper(TryErrorFunc, CatchAllFunc, testFuncNoError); err != nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryErrorFunc, CatchAllFunc, testFuncError); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryErrorFunc, CatchAllFunc, testFuncPanic); err == nil {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func testWrapper(tryFunc func(error), catchFunc func(*error), f func() error) (err error) {
+	defer catchFunc(&err)
+	tryFunc(f())
 
 	return
 }

@@ -46,14 +46,15 @@ import "github.com/p-alexander/lazyerrors"
      }()
 ```
 
- As a result, you'll have 'return on error' behaviour as if standart approach was used.
+ As a result, you'll have 'return on error' behaviour as if standard approach was used.
 
  What happens inside of Try:
  - On nil error execution will procede normally.
  - On non-nil error it will be wrapped to show the caller and risen as panic until Catch.
  - If an error was already wrapped, it won't be wrapped again to preserve the caller.
+ - Wrapping can be disabled by assigning Try with another handler from a given set.
 
  Now about Catch:
  - By default Catch can recover from any error or panic.
- - Default behaviour can be changed by assigning Catch with other handler from a given set.
+ - Default behaviour can be changed by assigning Catch with another handler from a given set.
  - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
