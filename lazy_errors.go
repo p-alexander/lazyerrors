@@ -39,6 +39,13 @@
 //     - Default behaviour can be changed by assigning Catch with another handler from a given set.
 //     - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
 //
+// Defaults:
+//
+//     - Try is set to TryWrapErrorFunc by default (wraps errors into LazyErrorWithCaller).
+//     - Catch is set to CatchAllWithStackFunc by default (wraps panics into LazyErrorFromPanic).
+//     - Fastest configuration with panic recover option would be TryErrorFunc/CatchAllFunc.
+//     - Fastest configuration without panic recover option would be TryErrorFunc/CatchErrorFunc.
+//
 package lazyerrors
 
 import (
@@ -49,10 +56,10 @@ import (
 )
 
 var (
-	// Catch - common catch handler, defaults to CatchAllFunc.
-	Catch = CatchAllFunc
-	// Try - common try handler, defaults to TryWrappedErrorFunc.
-	Try = TryWrappedErrorFunc
+	// Catch - common catch handler, defaults to CatchAllWithStackFunc.
+	Catch = CatchAllWithStackFunc
+	// Try - common try handler, defaults to TryWrapErrorFunc.
+	Try = TryWrapErrorFunc
 	// ErrPanic - default error wrapped inside of LazyErrorFromPanic for Uwrap consistency.
 	ErrPanic = errors.New("panic")
 )
@@ -115,8 +122,8 @@ func caller() string {
 	return ""
 }
 
-// TryWrappedErrorFunc - wraps non-nil error err into LazyErrorWithCaller and throws it as panic.
-func TryWrappedErrorFunc(err error) {
+// TryWrapErrorFunc - wraps non-nil error err into LazyErrorWithCaller and throws it as a panic.
+func TryWrapErrorFunc(err error) {
 	if err != nil {
 		switch err.(type) {
 		// if an error is already wrapped, then return it as is.
@@ -129,7 +136,7 @@ func TryWrappedErrorFunc(err error) {
 	}
 }
 
-// TryErrorFunc - throws non-nil error err as panic.
+// TryErrorFunc - throws non-nil error err as a panic.
 func TryErrorFunc(err error) {
 	if err != nil {
 		panic(err)
@@ -173,7 +180,25 @@ func CatchErrorFunc(ep *error) {
 	}
 }
 
-// CatchAllFunc - catches thrown error or panic.
+// CatchAllWithStackFunc - catches thrown error or panic (stack will be added).
+func CatchAllWithStackFunc(ep *error) {
+	if ep == nil {
+		return
+	}
+	// recover from panic.
+	if r := recover(); r != nil {
+		// if an error was thrown, assign it through the pointer and return.
+		if err, ok := r.(error); ok {
+			*ep = err
+
+			return
+		}
+		// else wrap a panic info into LazyErrorFromPanic, stack included.
+		*ep = NewErrorFromPanic(r, debug.Stack())
+	}
+}
+
+// CatchAllFunc - catches thrown error or panic (stack won't be added).
 func CatchAllFunc(ep *error) {
 	if ep == nil {
 		return
@@ -187,6 +212,6 @@ func CatchAllFunc(ep *error) {
 			return
 		}
 		// else wrap a panic info into an error.
-		*ep = NewErrorFromPanic(r, debug.Stack())
+		*ep = fmt.Errorf("panic: %v", r)
 	}
 }

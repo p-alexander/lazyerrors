@@ -58,3 +58,9 @@ import "github.com/p-alexander/lazyerrors"
  - By default Catch can recover from any error or panic.
  - Default behaviour can be changed by assigning Catch with another handler from a given set.
  - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
+
+ Defaults:
+- Try is set to TryWrapErrorFunc by default (wraps errors into LazyErrorWithCaller).
+- Catch is set to CatchAllWithStackFunc by default (wraps panics into LazyErrorFromPanic).
+- Fastest configuration with panic recover option would be TryErrorFunc/CatchAllFunc.
+- Fastest configuration without panic recover option would be TryErrorFunc/CatchErrorFunc.
