@@ -11,6 +11,10 @@
 //     func foo() (err error) {
 //             defer lazyerrors.Catch(&err)
 //             lazyerrors.Try(bar())
+//             i, err := baz()
+//             lazyerrors.Try(err)
+//             _, err = qux(i)
+//             lazyerrors.Try(err)
 //
 //             return
 //     }
