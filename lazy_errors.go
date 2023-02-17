@@ -2,54 +2,53 @@
 //
 // Purpose of this package is to show a way to diminish endless chains of:
 //
-//     if err != nil {
-//             return err
-//     }
+//	if err != nil {
+//	        return err
+//	}
 //
 // Defer Catch at the beggining of your function and then check for errors with Try.
 //
-//     func foo() (err error) {
-//             defer lazyerrors.Catch(&err)
-//             lazyerrors.Try(bar())
-//             i, err := baz()
-//             lazyerrors.Try(err)
-//             _, err = qux(i)
-//             lazyerrors.Try(err)
+//	func foo() (err error) {
+//	        defer lazyerrors.Catch(&err)
+//	        lazyerrors.Try(bar())
+//	        i, err := baz()
+//	        lazyerrors.Try(err)
+//	        _, err = qux(i)
+//	        lazyerrors.Try(err)
 //
-//             return
-//     }
+//	        return
+//	}
 //
 // Or put Try/Catch inside of your code with an anonymous function.
 //
-//     var err error
+//	var err error
 //
-//     func() {
-//             defer lazyerrors.Catch(&err)
-//             lazyerrors.Try(bar())
-//     }()
+//	func() {
+//	        defer lazyerrors.Catch(&err)
+//	        lazyerrors.Try(bar())
+//	}()
 //
 // As a result, you'll have 'return on error' behaviour as if standard approach was used.
 //
 // What happens inside of Try:
 //
-//     - On nil error execution will procede normally.
-//     - On non-nil error it will be wrapped to show the caller and risen as panic until Catch.
-//     - If an error was already wrapped, it won't be wrapped again to preserve the caller.
-//     - Wrapping can be disabled by assigning Try with another handler from a given set.
+//   - On nil error execution will procede normally.
+//   - On non-nil error it will be wrapped to show the caller and risen as panic until Catch.
+//   - If an error was already wrapped, it won't be wrapped again to preserve the caller.
+//   - Wrapping can be disabled by assigning Try with another handler from a given set.
 //
 // Now about Catch:
 //
-//     - By default Catch can recover from any error or panic.
-//     - Default behaviour can be changed by assigning Catch with another handler from a given set.
-//     - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
+//   - By default Catch can recover from any error or panic.
+//   - Default behaviour can be changed by assigning Catch with another handler from a given set.
+//   - If Catch recovers from a panic, it wraps recovered information into LazyErrorFromPanic.
 //
 // Defaults:
 //
-//     - Try is set to TryWrapErrorFunc by default (wraps errors into LazyErrorWithCaller).
-//     - Catch is set to CatchAllWithStackFunc by default (wraps panics into LazyErrorFromPanic).
-//     - Fastest configuration with panic recover option would be TryErrorFunc/CatchAllFunc.
-//     - Fastest configuration without panic recover option would be TryErrorFunc/CatchErrorFunc.
-//
+//   - Try is set to TryWrapErrorFunc by default (wraps errors into LazyErrorWithCaller).
+//   - Catch is set to CatchAllWithStackFunc by default (wraps panics into LazyErrorFromPanic).
+//   - Fastest configuration with panic recover option would be TryErrorFunc/CatchAllFunc.
+//   - Fastest configuration without panic recover option would be TryErrorFunc/CatchErrorFunc.
 package lazyerrors
 
 import (
@@ -86,9 +85,14 @@ func (e *LazyErrorWithCaller) Error() string {
 	return e.Caller + e.Err.Error()
 }
 
-// Unwrap - error interface implementation (1.13).
+// Unwrap - error interface implementation.
 func (e *LazyErrorWithCaller) Unwrap() error {
 	return e.Err
+}
+
+// Is - error interface implementation.
+func (e *LazyErrorWithCaller) Is(err error) bool {
+	return errors.Is(e.Err, err)
 }
 
 // Error - error interface implementation.
@@ -96,9 +100,14 @@ func (e *LazyErrorFromPanic) Error() string {
 	return fmt.Sprintf("[%v recovered]:\n%v\n[stack]:\n%s", ErrPanic, e.Recovered, e.Stack)
 }
 
-// Unwrap - error interface implementation (1.13).
+// Unwrap - error interface implementation.
 func (e *LazyErrorFromPanic) Unwrap() error {
 	return ErrPanic
+}
+
+// Is - error interface implementation.
+func (e *LazyErrorFromPanic) Is(err error) bool {
+	return errors.Is(ErrPanic, err)
 }
 
 // NewErrorWithCaller - adds caller information to error err and wraps it into LazyErrorWithCaller.

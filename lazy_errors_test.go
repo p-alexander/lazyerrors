@@ -175,6 +175,26 @@ func TestCatchAllFunc(t *testing.T) {
 	}
 }
 
+func TestErrorIs(t *testing.T) {
+	customError := errors.New("test error")
+
+	f := func() error {
+		return customError
+	}
+
+	if err := testWrapper(TryErrorFunc, CatchAllFunc, f); !errors.Is(err, customError) {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+
+	if err := testWrapper(TryWrapErrorFunc, CatchAllFunc, f); !errors.Is(err, customError) {
+		t.Fatal("unexpected:", err)
+	} else {
+		fmt.Println(err)
+	}
+}
+
 func testWrapper(tryFunc func(error), catchFunc func(*error), f func() error) (err error) {
 	defer catchFunc(&err)
 	tryFunc(f())
